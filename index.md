@@ -1,7 +1,7 @@
 # MUR-X1 水下机器人
 <div align="right">
 
-🇨🇳 中文版 [<sup>1</sup>](./index.md) · 🇬🇧 English [<sup>2</sup>](./index.en.md)
+🇨🇳 中文版 [<sup>1</sup>](./index.md) · 🇬🇧 English Version [<sup>2</sup>](./index_en.md)
 
 </div>
 欢迎访问 MUR-X1 水下机器人页面。本文档用于介绍系统的核心能力、技术规格、功能配置及典型应用场景，便于用户快速了解平台的整体设计与使用定位。

@@ -1,7 +1,7 @@
 # MUR-X1 Underwater Robot
 <div align="right">
 
-🇨🇳 中文 [<sup>1</sup>](./index.md) · 🇬🇧 English Version [<sup>2</sup>](./index.en.md)
+🇨🇳 中文版 [<sup>1</sup>](./index.md) · 🇬🇧 English Version [<sup>2</sup>](./index_en.md)
 
 </div>
 Welcome to the documentation page for the MUR-X1 underwater robot project. This document provides an overview of the system’s core capabilities, technical specifications, functional configuration, and typical application scenarios, enabling users to quickly understand the platform’s overall design and intended use.
