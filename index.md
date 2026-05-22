@@ -70,5 +70,4 @@ MUR-X1 可广泛应用于以下领域：
 ## 资源下载
 
 如需获取完整配套资料，请下载以下 PDF 文档：
-
-### 下载完整文档 document.pdf [<sup>1</sup>](./assets/document.pdf)
+<a href="{{ '/assets/document.pdf' | relative_url }}">下载完整文档</a>
