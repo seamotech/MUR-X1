@@ -70,4 +70,4 @@ MUR-X1 can be widely applied in the following fields:
 ## Resources
 
 For complete supporting materials, please download the PDF document below:
-<a href="{{ '/assets/document_en.pdf' | relative_url }}">下载完整文档</a>
+<a href="{{ '/assets/document_en.pdf' | relative_url }}">DOWNLOAD FULL DOCUMENT</a>
