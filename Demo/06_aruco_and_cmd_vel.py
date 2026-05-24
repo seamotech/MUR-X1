@@ -177,80 +177,14 @@ def main() -> None:
                 # get_raw_frame() returns both the current image and a sequence
                 # number. If the sequence did not change, there is no new frame yet.
                 # ---------------------------------------------------------
-                frame, seq = camera.get_raw_frame()
-                if frame is None or seq == last_seq:
-                    time.sleep(0.01)
-                    continue
+                
 
-                last_seq = seq
-                fps_frame_count += 1
-                fps_elapsed = time.time() - fps_start_time
-                if fps_elapsed >= 1.0:
-                    fps_display = fps_frame_count / fps_elapsed
-                    fps_frame_count = 0
-                    fps_start_time = time.time()
-                # frame= cv2.rotate(frame, cv2.ROTATE_180)
                 # ---------------------------------------------------------
                 # Step 7: detect ArUco markers.
                 # The frame is converted to grayscale first because that is the most
                 # common input format for OpenCV ArUco detection.
                 # ---------------------------------------------------------
-                preview = frame.copy()
-                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-                corners, ids, _ = detector.detectMarkers(gray)
-
-                detected_ids = []
-                target_corners = None
-                target_source = "hold"
-                now = time.time()
-
-                if ids is not None and len(ids) > 0:
-                    detected_ids = ids.flatten().tolist()
-
-                    # -----------------------------------------------------
-                    # Step 8: visualize the detected markers.
-                    # Drawing marker boxes makes it easy to confirm that OpenCV is
-                    # seeing the same tags that the operator sees on screen.
-                    # -----------------------------------------------------
-                    aruco.drawDetectedMarkers(preview, corners, ids)
-
-                    # Find the corners of target_id if it is visible.
-                    for i, mid in enumerate(ids.flatten()):
-                        if mid == target_id:
-                            target_corners = corners[i][0].astype(np.float32)
-                            tracked_corners = target_corners.copy()
-                            tracked_points = _seed_tracking_points(gray, tracked_corners)
-                            tracker_gap_frames = 0
-                            target_source = "aruco"
-                            break
-
-                if (
-                    target_corners is None
-                    and prev_gray is not None
-                    and tracked_points is not None
-                    and tracked_corners is not None
-                    and tracker_gap_frames < tracker_max_gap_frames
-                ):
-                    tracked_result = _track_marker(prev_gray, gray, tracked_points, tracked_corners)
-                    if tracked_result is not None:
-                        tracked_points, tracked_corners = tracked_result
-                        target_corners = tracked_corners.copy()
-                        tracker_gap_frames += 1
-                        target_source = "tracker"
-                        cv2.polylines(
-                            preview,
-                            [np.round(target_corners).astype(np.int32)],
-                            isClosed=True,
-                            color=(0, 165, 255),
-                            thickness=2,
-                        )
-                    else:
-                        tracked_points = None
-                        tracked_corners = None
-                        tracker_gap_frames = tracker_max_gap_frames + 1
-
-                if target_corners is None:
-                    tracker_gap_frames = min(tracker_gap_frames + 1, tracker_max_gap_frames + 1)
+                
 
                 # ---------------------------------------------------------
                 # Step 9: visual servo — rotate to keep target_id centred.
@@ -259,74 +193,21 @@ def main() -> None:
                 # to the right) -> negative ang_z (rotate right / CW in ROS).
                 # When target_id is not visible ang_z = 0 (hold position).
                 # ---------------------------------------------------------
-                if now - last_publish_time >= publish_interval_s:
-                    if target_corners is not None:
 
-                        frame_cx  = frame.shape[1] / 2.0
-                        marker_cx = target_corners[:, 0].mean()
-                        errorx  = marker_cx - frame_cx
-                        ang_z  = ang_z_gain * errorx / frame_cx  # 去负号：如果右边(+)->向右转(+)
-                        # 角度范围：[-1, 1]
-                        frame_cy  = frame.shape[0] / 2.0
-                        marker_cy = target_corners[:, 1].mean()
-                        errory  = marker_cy - frame_cy
-                        zu  = z_gain * errory / frame_cy
-                        print(
-                            f"id={target_id} source={target_source} marker_cx={marker_cx:.1f} "
-                            f"errorx={errorx:.1f}px ang_z={ang_z:.3f} lin_z={zu:.3f}"
-                        )
-                    else:
-                        ang_z = 0.0
-                        zu = 0.0
-                        # print(f"id={target_id} not visible — holding (detected={detected_ids})")
-
-                    twist, type_str = MessageBuilder.velocity_command(ang_z=ang_z, lin_z=zu)
-                    frontend.publish(
-                        topic="/teleop/cmd_vel",
-                        type_str=type_str,
-                        message_dict=twist,
-                    )
-                    last_publish_time = now
 
                 # ---------------------------------------------------------
                 # Step 10: draw a small overlay for the live preview.
                 # This is just local UI so the learner can see which camera is being
                 # used, which frame is displayed, and which marker IDs were found.
                 # ---------------------------------------------------------
-                status_text = (
-                    f"{camera_label} fps={fps_display:.1f} seq={seq} ids={detected_ids or 'none'} source={target_source} "
-                    f"gap={tracker_gap_frames if target_source == 'tracker' else 0}"
-                )
-                preview = imutils.resize(preview, width=1280)    
-                cv2.putText(
-                    preview,
-                    status_text,
-                    (16, 32),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    0.8,
-                    (0, 255, 0),
-                    2,
-                )
+
 
                 # ---------------------------------------------------------
                 # Step 11: show the preview window.
                 # The window refreshes continuously until the user presses q or Esc.
                 # ---------------------------------------------------------
-                preview = imutils.resize(preview, width=1280)
-                cv2.imshow("nauticore aruco demo", preview)
 
-                key = cv2.waitKey(1) & 0xFF
-                if key in (27, ord("q")):
-                    frontend.publish(
-                        topic="/eth/motor_enable",
-                        type_str="std_msgs/Int32",
-                        message_dict={"data": 0},
-                    )
-                    
-                    print("Published /eth/motor_enable -> {'data': 0}")
-                    break
-
-                prev_gray = gray
+                
     finally:
         # -----------------------------------------------------------------
         # Step 12: clean up all resources.

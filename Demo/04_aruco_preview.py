@@ -62,55 +62,27 @@ def main() -> None:
     last_seq = -1
 
     try:
-        print(f"Using vehicle file: {vehicle_path}")
-        print(f"Displaying camera: {camera_label}")
-        print("Workflow: read frame -> detect ArUco -> draw ids -> preview")
-        print("Press q or Esc to exit.")
 
         while True:
             # -------------------------------------------------------------
             # Step 5: read the newest camera frame.
             # -------------------------------------------------------------
-            frame, seq = camera.get_raw_frame()
-            if frame is None or seq == last_seq:
-                time.sleep(0.01)
-                continue
-
-            last_seq = seq
+            
 
             # -------------------------------------------------------------
             # Step 6: detect markers in the current frame.
             # -------------------------------------------------------------
-            gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-            corners, ids, _ = detector.detectMarkers(gray)
-            preview = frame.copy()
-
-            detected_ids = []
-            if ids is not None and len(ids) > 0:
-                detected_ids = ids.flatten().tolist()
-                aruco.drawDetectedMarkers(preview, corners, ids)
+            
 
             # -------------------------------------------------------------
             # Step 7: draw a small overlay.
             # -------------------------------------------------------------
-            status_text = f"{camera_label} seq={seq} ids={detected_ids or 'none'}"
-            cv2.putText(
-                preview,
-                status_text,
-                (16, 32),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.8,
-                (0, 255, 0),
-                2,
-            )
+            
 
             # -------------------------------------------------------------
             # Step 8: show the preview window.
             # -------------------------------------------------------------
-            cv2.imshow("nauticore aruco preview", preview)
-            key = cv2.waitKey(1) & 0xFF
-            if key in (27, ord("q")):
-                break
+            
     finally:
         # -----------------------------------------------------------------
         # Step 9: clean up all resources.

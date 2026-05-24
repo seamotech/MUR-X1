@@ -60,62 +60,41 @@ def main() -> None:
     last_seq = -1
 
     try:
-        # -----------------------------------------------------------------
-        # Step 4: print the runtime configuration.
-        # This helps a new user confirm which vehicle file and camera label are
-        # actually being used by the preview.
-        # -----------------------------------------------------------------
-        print(f"Using vehicle file: {vehicle_path}")
-        print(f"Displaying camera: {camera_label}")
-        print("Press q or Esc to exit.")
 
         while True:
             # -------------------------------------------------------------
-            # Step 5: read the newest frame from the selected camera.
+            # Step 4: read the newest frame from the selected camera.
             # get_raw_frame() returns both the image and a sequence number.
             # If the sequence did not change, the demo waits briefly and tries
             # again instead of redrawing the same frame.
             # -------------------------------------------------------------
             frame, seq = camera.get_raw_frame()
-            if frame is None or seq == last_seq:
-                time.sleep(0.01)
-                continue
-
-            last_seq = seq
+        
 
             # -------------------------------------------------------------
-            # Step 6: create a local preview image.
+            # Step 5: create a local preview image.
             # The frame is copied so the overlay text can be drawn without
             # mutating the original image object returned by the camera.
             # -------------------------------------------------------------
-            preview = frame.copy()
+            
 
             # -------------------------------------------------------------
-            # Step 7: draw a small overlay.
+            # Step 6: draw a small overlay.
             # This makes it obvious which camera stream is active and which
             # frame sequence number is currently on screen.
             # -------------------------------------------------------------
-            cv2.putText(
-                preview,
-                f"{camera_label} seq={seq}",
-                (16, 32),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                0.8,
-                (0, 255, 0),
-                2,
-            )
+
 
             # -------------------------------------------------------------
-            # Step 8: show the preview window.
+            # Step 7: show the preview window.
             # The loop keeps refreshing until the user presses q or Esc.
             # -------------------------------------------------------------
-            cv2.imshow("nauticore camera preview", preview)
-            key = cv2.waitKey(1) & 0xFF
-            if key in (27, ord("q")):
-                break
+
+
+
     finally:
         # -----------------------------------------------------------------
-        # Step 9: clean up all resources.
+        # Step 8: clean up all resources.
         # Release every camera created by init_vehicle(), close the frontend
         # transport, and then destroy OpenCV windows.
         # -----------------------------------------------------------------
